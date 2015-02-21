@@ -1,0 +1,80 @@
+
+setwd('~/Dropbox/Code/coursera/getcleandata')
+
+### LOAD TRAIN DATA #####
+y_train <- read.table("final_dataset/train/y_train.txt")
+head(y_train)
+
+x_train <- read.table("final_dataset/train/X_train.txt")
+head(x_train)
+
+subject_train <- read.table("final_dataset/train/subject_train.txt")
+head(subject_train)
+
+# Confirm dimensions
+dim(x_train)
+dim(y_train)
+dim(subject_train)
+
+### LOAD TEST DATA #####
+y_test <- read.table("final_dataset/test/y_test.txt")
+head(y_test)
+
+x_test <- read.table("final_dataset/test/X_test.txt")
+head(x_test)
+
+subject_test <- read.table("final_dataset/test/subject_test.txt")
+head(subject_test)
+
+# Confirm dimensions
+dim(x_test)
+dim(y_test)
+dim(subject_test)
+
+## Merge train and test data sets
+
+## Merge X data
+x_merge <- rbind(x_train, x_test)
+dim(x_merge)
+
+# Merge Y data
+y_merge <- rbind(y_train, y_test)
+dim(y_merge)
+ 
+# Merge subject data
+subject_merge <- rbind(subject_train, subject_test)
+dim(subject_merge)
+
+# Get feature names
+features <- read.table("final_dataset/features.txt")
+
+# update column names
+new_colnames <- features[,'V2']
+colnames(x_merge) <- new_colnames
+colnames(y_merge) <- "Activity"
+colnames(subject_merge) <- "Subject"
+
+## Get vector of indices of features that have "mean" in the name
+indices <- grep("mean+|std+", new_colnames, perl=TRUE, value=FALSE)
+
+## Create a subset data frame with just mean and std columns
+x_merge_subset <- x_merge[,indices]
+
+# Column bind X, Y and Subject data into 1 master data set
+all_data <- cbind(x_merge_subset, y_merge, subject_merge)
+head(all_data)
+
+## Update Activity variable to have a more descriptive name
+all_data$Activity[all_data$Activity == 6] <- 'LAYING'
+all_data$Activity[all_data$Activity == 5] <- 'STANDING'
+all_data$Activity[all_data$Activity == 4] <- 'SITTING'
+all_data$Activity[all_data$Activity == 3] <- 'WALKING_DOWN'
+all_data$Activity[all_data$Activity == 2] <- 'WALKING_UP'
+all_data$Activity[all_data$Activity == 1] <- 'WALKING'
+
+# Ensure that the Activity variable is treated as a factor
+all_data$Activity <- factor(all_data$Activity)
+
+install.packages("dplyr")
+library(dplyr)
+
