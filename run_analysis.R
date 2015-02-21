@@ -75,6 +75,9 @@ all_data$Activity[all_data$Activity == 1] <- 'WALKING'
 # Ensure that the Activity variable is treated as a factor
 all_data$Activity <- factor(all_data$Activity)
 
-install.packages("dplyr")
+## fix names
+colnames(all_data) <- make.names(colnames(all_data))
+
+#install.packages("dplyr")
 library(dplyr)
 
